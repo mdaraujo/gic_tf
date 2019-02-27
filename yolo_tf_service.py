@@ -1,7 +1,9 @@
 import os
 import time
-from flask import Flask, flash, request, redirect, url_for, send_from_directory
+from flask import Flask, flash, request, redirect, url_for
+from flask import send_from_directory, render_template_string
 from werkzeug.utils import secure_filename
+from YOLO_small_tf import YOLO_TF
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -10,8 +12,10 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+global yolo
 
-@app.route('/', methods=['GET'])
+
+@app.route('/')
 def home():
     return redirect(url_for('upload_file'))
 
@@ -60,11 +64,21 @@ def uploaded_file(filename):
 
 @app.route('/process/<filename>')
 def process(filename):
-    return '''
+    results = yolo.detect_from_file(UPLOAD_FOLDER + '/' + filename)
+
+    template = '''
     <!doctype html>
-    <h1>Filename</h1>
+    <h2>Filename: {{ filename }}</h2>
+    <h3>Results: {{ results }}</h3>
     '''
+
+    return render_template_string(template, filename=filename, results=results)
 
 
 if __name__ == '__main__':
+    yolo = YOLO_TF()
     app.run(host='0.0.0.0')
+
+
+# TODO curl not working - sending POST on redirect
+# curl -L -X POST -F 'file=@person.jpg' http://localhost:5000/upload

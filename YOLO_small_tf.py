@@ -10,9 +10,10 @@ import os
 
 class YOLO_TF:
     fromfile = None
+    fromfolder = None
     tofile_img = 'test/output.jpg'
     tofile_txt = 'test/output.txt'
-    imshow = True
+    imshow = False
     filewrite_img = False
     filewrite_txt = False
     disp_console = True
@@ -181,6 +182,15 @@ class YOLO_TF:
         img = cv2.imread(filename)
         # img = misc.imread(filename)
         self.detect_from_cvmat(img)
+
+        results_text = ''
+        for i in range(len(self.result)):
+            x = int(self.result[i][1])
+            y = int(self.result[i][2])
+            results_text += '    class : ' + self.result[i][0] + ' , [x,y,w,h]=[' + str(x) + ',' + str(y) + ',' + str(
+                int(self.result[i][3])) + ',' + str(int(self.result[i][4]))+'], Confidence = ' + str(self.result[i][5])
+
+        return results_text
 
     def detect_from_crop_sample(self):
         self.w_img = 640
