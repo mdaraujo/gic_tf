@@ -81,4 +81,4 @@ if __name__ == '__main__':
 
 
 # TODO curl not working - sending POST on redirect
-# curl -L -X POST -F 'file=@person.jpg' http://localhost:5000/upload
+# curl -L -X POST -F 'file=@test_images/person.jpg' http://localhost:5000/upload
