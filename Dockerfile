@@ -39,18 +39,17 @@ RUN apt-get install wget -y
 
 RUN mkdir -p /opt
 
-COPY drive_download.sh /opt
-RUN chmod +x /opt/drive_download.sh
-RUN ./opt/drive_download.sh
+RUN git clone https://github.com/mdaraujo/gic_tf.git /opt/yolo_tf
+WORKDIR /opt/yolo_tf
 
-# COPY YOLO_small.ckpt /opt
-COPY YOLO_small_tf.py /opt
-COPY yolo_tf_service.py /opt
+RUN chmod +x drive_download.sh
+RUN ./drive_download.sh
 
-RUN mkdir /opt/uploads
+RUN mkdir weights
+RUN mv YOLO_small.ckpt weights
 
-WORKDIR /opt
+RUN mkdir uploads
 
 EXPOSE 7700
 
-CMD ["/usr/bin/python", "/opt/yolo_tf_service.py"]
+CMD ["/usr/bin/python", "/opt/yolo_tf/yolo_tf_service.py"]
