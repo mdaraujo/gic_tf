@@ -43,7 +43,11 @@ COPY drive_download.sh /opt
 RUN chmod +x /opt/drive_download.sh
 RUN ./opt/drive_download.sh
 
+# COPY YOLO_small.ckpt /opt
+COPY YOLO_small_tf.py /opt
 COPY yolo_tf_service.py /opt
+
+RUN mkdir /opt/uploads
 
 WORKDIR /opt
 
