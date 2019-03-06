@@ -1,32 +1,28 @@
 import os
 import time
+import string
+import random
+
 from flask import Flask, flash, request, redirect, url_for
 from flask import send_from_directory, render_template_string
 from werkzeug.utils import secure_filename
 from YOLO_small_tf import YOLO_TF
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-global yolo
-
 
 @app.route('/')
 def home():
-    return redirect(url_for('upload_file'))
+    return redirect(url_for('process_file'))
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/process', methods=['GET', 'POST'])
+def process_file():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -41,17 +37,18 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             ts = time.time()
-            filename = str(ts) + "_" + filename
+            filename = str(ts).replace('.', '_') + '_' + \
+                id_generator() + '_' + filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('process',
-                                    filename=filename))
+            return process(filename)
+
     return '''
     <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
+    <title>Process new image</title>
+    <h1>Process new image</h1>
     <form method=post enctype=multipart/form-data>
       <p><input type=file name=file>
-         <input type=submit value=Upload>
+         <input type=submit value=Process>
     </form>
     '''
 
@@ -75,10 +72,19 @@ def process(filename):
     return render_template_string(template, filename=filename, results=results)
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
 if __name__ == '__main__':
     yolo = YOLO_TF()
     app.run(host='0.0.0.0')
 
 
-# TODO curl not working - sending POST on redirect
-# curl -L -X POST -F 'file=@test_images/person.jpg' http://localhost:5000/upload
+# TO TEST:
+# curl -X POST -F 'file=@test_images/person1.jpg' http://localhost:5000/process
