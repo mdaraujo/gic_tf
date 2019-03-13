@@ -33,7 +33,7 @@ RUN ${PIP} install ${TF_PACKAGE}${TF_PACKAGE_VERSION:+==${TF_PACKAGE_VERSION}}
 #OpenCV
 RUN apt-get install build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev -y
 
-RUN ${PIP} install numpy opencv-python flask
+RUN ${PIP} install numpy opencv-python flask jsonpickle
 
 RUN apt-get install wget -y
 
