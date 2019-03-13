@@ -3,9 +3,19 @@
 for value in {1..7}
 do
     echo "Request "$value
-    curl -X POST -F "file=@test_images/person"$value".jpg" http://172.17.0.2:5000/process && echo -e "\nDone "$value"\n" &
+    curl -X POST -F "file=@test_images/person"$value".jpg" http://localhost:5000/process && echo -e "\nDone "$value"\n" &
 done
 
 wait
 
 echo -e "\nAll done"
+
+
+# for k in {1..200}
+# do
+#     for value in {1..7}
+#     do
+#         echo "Request "$value
+#         curl -X POST -F "file=@test_images/person"$value".jpg" http://192.168.215.29:7700/process && echo -e "\nDone "$value"\n" &
+#     done
+# done

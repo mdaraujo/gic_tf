@@ -48,8 +48,6 @@ RUN ./drive_download.sh
 RUN mkdir weights
 RUN mv YOLO_small.ckpt weights
 
-RUN mkdir uploads
-
-EXPOSE 7700
+EXPOSE 5000
 
 CMD ["/usr/bin/python", "/opt/yolo_tf/yolo_tf_service.py"]
