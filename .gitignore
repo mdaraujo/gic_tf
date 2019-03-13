@@ -1,8 +1,8 @@
 ### CUSTOM
 .vscode
 .directory
-uploads
 weights
+test_videos
 
 
 ### PYTHON

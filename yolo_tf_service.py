@@ -20,12 +20,18 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 @app.route('/')
 def home():
-    return redirect(url_for('process_file'))
+    return redirect(url_for('process_image'))
 
 
 @app.route('/process', methods=['GET', 'POST'])
-def process_file():
+def process_image():
     if request.method == 'POST':
+
+        if len(request.files.keys()) == 0:
+            nparr = np.fromstring(request.data, np.uint8)
+            img_mat = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            return process(img_mat)
+
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
