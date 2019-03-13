@@ -2,18 +2,20 @@ import os
 import time
 import string
 import random
+import io
+import cv2
+import numpy as np
+import jsonpickle
 
-from flask import Flask, flash, request, redirect, url_for
+from flask import Flask, flash, request, redirect, url_for, Response
 from flask import send_from_directory, render_template_string
 from werkzeug.utils import secure_filename
 from YOLO_small_tf import YOLO_TF
 
-UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 @app.route('/')
@@ -35,12 +37,11 @@ def process_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            ts = time.time()
-            filename = str(ts).replace('.', '_') + '_' + \
-                id_generator() + '_' + filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return process(filename)
+            in_memory_file = io.BytesIO()
+            file.save(in_memory_file)
+            nparr = np.fromstring(in_memory_file.getvalue(), dtype=np.uint8)
+            img_mat = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            return process(img_mat, file.filename)
 
     return '''
     <!doctype html>
@@ -53,32 +54,23 @@ def process_file():
     '''
 
 
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
+def process(img_mat, filename=None):
+    results, elapsed_seconds = yolo.detect_from_cvmat(img_mat)
 
+    if filename:
+        response = {'filename': filename,
+                    'results': results, 'elapsed seconds': elapsed_seconds}
+    else:
+        response = {'results': results, 'elapsed seconds': elapsed_seconds}
 
-@app.route('/process/<filename>')
-def process(filename):
-    results = yolo.detect_from_file(UPLOAD_FOLDER + '/' + filename)
+    response_pickled = jsonpickle.encode(response)
 
-    template = '''
-    <!doctype html>
-    <h2>Filename: {{ filename }}</h2>
-    <h3>Results: {{ results }}</h3>
-    '''
-
-    return render_template_string(template, filename=filename, results=results)
+    return Response(response=response_pickled, status=200, mimetype="application/json")
 
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
 
 
 if __name__ == '__main__':

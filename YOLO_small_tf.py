@@ -16,7 +16,7 @@ class YOLO_TF:
     imshow = False
     filewrite_img = False
     filewrite_txt = False
-    disp_console = True
+    disp_console = False
     weights_file = 'weights/YOLO_small.ckpt'
     alpha = 0.1
     threshold = 0.2
@@ -172,25 +172,28 @@ class YOLO_TF:
         net_output = self.sess.run(self.fc_32, feed_dict=in_dict)
         self.result = self.interpret_output(net_output[0])
         self.show_results(img, self.result)
-        strtime = str(time.time()-s)
+        elapsed_time = time.time() - s
         if self.disp_console:
-            print 'Elapsed time : ' + strtime + ' secs' + '\n'
+            print 'Elapsed time : ' + str(elapsed_time) + ' secs' + '\n'
+
+        results = []
+        for i in range(len(self.result)):
+            x = int(self.result[i][1])
+            y = int(self.result[i][2])
+            w = int(self.result[i][3])
+            h = int(self.result[i][4])
+            results.append({'class': self.result[i][0],
+                            '[x,y,w,h]:': '[{},{},{},{}]'.format(x, y, w, h),
+                            'confidence': float(self.result[i][5])})
+
+        return results, elapsed_time
 
     def detect_from_file(self, filename):
         if self.disp_console:
             print 'Detect from ' + filename
         img = cv2.imread(filename)
         # img = misc.imread(filename)
-        self.detect_from_cvmat(img)
-
-        results_text = ''
-        for i in range(len(self.result)):
-            x = int(self.result[i][1])
-            y = int(self.result[i][2])
-            results_text += '    class : ' + self.result[i][0] + ' , [x,y,w,h]=[' + str(x) + ',' + str(y) + ',' + str(
-                int(self.result[i][3])) + ',' + str(int(self.result[i][4]))+'], Confidence = ' + str(self.result[i][5])
-
-        return results_text
+        return self.detect_from_cvmat(img)
 
     def detect_from_crop_sample(self):
         self.w_img = 640
