@@ -7,11 +7,8 @@ from multiprocessing import Queue, Pool
 
 # python2 client_video_stream.py -i test_videos/Li165C-DN.mp4 -w 20 -q-size 150
 
-addr = 'http://localhost:5000'
-url = addr + '/process'
-
-content_type = 'image/jpeg'
-headers = {'content-type': content_type}
+URL = 'http://localhost:5000/process'
+HEADERS = {'content-type': 'image/jpeg'}
 
 
 def worker(input_q, output_q):
@@ -21,7 +18,7 @@ def worker(input_q, output_q):
         _, img_encoded = cv2.imencode('.jpg', frame)
 
         response = requests.post(
-            url, data=img_encoded.tostring(), headers=headers)
+            URL, data=img_encoded.tostring(), headers=HEADERS)
 
         output_q.put(response)
 
@@ -80,25 +77,28 @@ def main():
     min_elapsed_time = 1./args["request_rate"]
     prev_time = 0
 
+    stopped = False
+
     while True:
-        # Read frame and try to store in input queue
-        ret, frame = video.read()
 
-        time_elapsed = time.time() - prev_time
+        if not stopped:
+            # Read frame and try to store in input queue
+            ret, frame = video.read()
 
-        if time_elapsed > min_elapsed_time and ret:
-            prev_time = time.time()
+            time_elapsed = time.time() - prev_time
 
-            if args["display"] > 0:
-                cv2.imshow('frame', frame)
+            if time_elapsed > min_elapsed_time and ret:
+                prev_time = time.time()
 
-            # Check input queue is not full
-            if not input_q.full():
-                input_q.put(frame)
-                countReadFrames += 1
-            else:
-                print("WARN: Input queue is full.")
-                countMissedFrames += 1
+                if args["display"] > 0:
+                    cv2.imshow('frame', frame)
+
+                # Check input queue is not full
+                if not input_q.full():
+                    input_q.put(frame)
+                    countReadFrames += 1
+                else:
+                    countMissedFrames += 1
 
         # Check output queue is not empty
         if not output_q.empty():
@@ -108,10 +108,11 @@ def main():
             print("{}\n".format(response.text))
 
         if cv2.waitKey(delay) & 0xFF == ord('q'):
-            break
+            print("Stopping...\nWaiting for all workers to finish.\n")
+            stopped = True
 
-        if((not ret) & input_q.empty() & output_q.empty()):
-            print("\nVideo finished.\nAll queues are empty.")
+        if (stopped or not ret) and input_q.empty() and output_q.empty() and countTreatedFrames == countReadFrames:
+            print("\nVideo finished or stopped.\nAll queues are empty.")
             break
 
     print("\n -- Parameters -- ")
