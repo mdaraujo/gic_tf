@@ -5,7 +5,7 @@ import requests
 import argparse
 from multiprocessing import Queue, Pool
 
-# python2 client_video_stream.py -i test_videos/Li165C-DN.mp4 -w 20 -q-size 150
+# python2 video_stream_client.py -i videos/Li165C-DN.mp4 -w 20 -q-size 150
 
 URL = 'http://localhost:5000/process'
 HEADERS = {'content-type': 'image/jpeg'}
@@ -24,7 +24,6 @@ def worker(input_q, output_q):
 
 
 def main():
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--display", type=int, default=1,
                         help="Whether or not frames should be displayed. (1)")

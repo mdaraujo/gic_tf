@@ -12,6 +12,8 @@ from flask import send_from_directory, render_template_string
 from werkzeug.utils import secure_filename
 from YOLO_small_tf import YOLO_TF
 
+# curl -X POST -F 'file=@client/images/person1.jpg' http://localhost:5000/process
+
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 app = Flask(__name__)
@@ -82,7 +84,3 @@ def allowed_file(filename):
 if __name__ == '__main__':
     yolo = YOLO_TF()
     app.run(host='0.0.0.0')
-
-
-# TO TEST:
-# curl -X POST -F 'file=@test_images/person1.jpg' http://localhost:5000/process

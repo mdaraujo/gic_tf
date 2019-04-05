@@ -8,7 +8,7 @@ test_url = addr + '/process'
 content_type = 'image/jpeg'
 headers = {'content-type': content_type}
 
-img = cv2.imread('test_images/person1.jpg')
+img = cv2.imread('images/person1.jpg')
 # encode image as jpeg
 _, img_encoded = cv2.imencode('.jpg', img)
 # send http request with image and receive response

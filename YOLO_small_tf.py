@@ -6,7 +6,7 @@ import sys
 import os
 
 
-# TO TEST: python2 YOLO_small_tf.py -fromfile test_images/person.jpg
+# python2 YOLO_small_tf.py -fromfile client/images/person1.jpg -disp_console 1
 
 class YOLO_TF:
     fromfile = None
