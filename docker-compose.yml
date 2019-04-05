@@ -8,7 +8,9 @@ services:
         condition: on-failure
     ports:
       - "7700:5000"
+    volumes:
+      - /mnt/cifs13/yolo_tf/weights:/opt/weights
     networks:
-      - webnet
+      - webnet #Load-Balancer
 networks:
   webnet:

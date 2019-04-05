@@ -1,4 +1,4 @@
-FROM docker.io/ubuntu:16.04
+FROM docker.io/debian:stable-slim
 
 ARG USE_PYTHON_3_NOT_2
 ARG _PY_SUFFIX=${USE_PYTHON_3_NOT_2:+3}
@@ -24,13 +24,8 @@ ARG TF_PACKAGE=tensorflow
 ARG TF_PACKAGE_VERSION=
 RUN ${PIP} install ${TF_PACKAGE}${TF_PACKAGE_VERSION:+==${TF_PACKAGE_VERSION}}
 
-####Corrigir se necessário
-#COPY bashrc /etc/bash.bashrc
-#RUN chmod a+rwx /etc/bash.bashrc
-
 ## Custom
-
-#OpenCV
+# OpenCV
 RUN apt-get install build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev -y
 
 RUN ${PIP} install numpy opencv-python flask jsonpickle
@@ -38,16 +33,13 @@ RUN ${PIP} install numpy opencv-python flask jsonpickle
 RUN apt-get install wget -y
 
 RUN mkdir -p /opt
+RUN mkdir -p /opt/weights
 
-RUN git clone https://github.com/mdaraujo/gic_tf.git /opt/yolo_tf
-WORKDIR /opt/yolo_tf
+RUN wget https://raw.githubusercontent.com/mdaraujo/gic_tf/master/YOLO_small_tf.py -O /opt/YOLO_small_tf.py
+RUN wget https://raw.githubusercontent.com/mdaraujo/gic_tf/master/yolo_tf_service.py -O /opt/yolo_tf_service.py
 
-RUN chmod +x drive_download.sh
-RUN ./drive_download.sh
-
-RUN mkdir weights
-RUN mv YOLO_small.ckpt weights
+WORKDIR /opt
 
 EXPOSE 5000
 
-CMD ["/usr/bin/python", "/opt/yolo_tf/yolo_tf_service.py"]
+CMD ["/usr/bin/python", "/opt/yolo_tf_service.py"]
