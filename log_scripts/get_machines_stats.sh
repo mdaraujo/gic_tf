@@ -1,5 +1,5 @@
 #!/bin/bash
-MACHINES="1 2 4 5 6 8 9 10 11 12"
+MACHINES="1 2 4 5 6 8 9 10 11 12 13"
 if [[ ! -z $1 ]]; then
     MACHINES=("$1")
 fi

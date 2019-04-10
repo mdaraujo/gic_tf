@@ -3,6 +3,7 @@
 .directory
 weights
 videos
+*.csv
 
 
 ### PYTHON
