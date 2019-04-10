@@ -3,7 +3,7 @@ services:
   web:
     image: mdaraujo/gic_yolo_tf:latest
     deploy:
-      replicas: 6
+      replicas: 10
       restart_policy:
         condition: on-failure
     ports:

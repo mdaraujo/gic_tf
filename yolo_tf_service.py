@@ -1,15 +1,9 @@
 import os
-import time
-import string
-import random
 import io
 import cv2
 import numpy as np
 import jsonpickle
-
 from flask import Flask, flash, request, redirect, url_for, Response
-from flask import send_from_directory, render_template_string
-from werkzeug.utils import secure_filename
 from YOLO_small_tf import YOLO_TF
 
 # curl -X POST -F 'file=@client/images/person1.jpg' http://localhost:5000/process
@@ -38,18 +32,18 @@ def process_image():
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
-        file = request.files['file']
+        file_obj = request.files['file']
         # if user does not select file, browser also
         # submit a empty part without filename
-        if file.filename == '':
+        if file_obj.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
+        if file_obj and allowed_file(file_obj.filename):
             in_memory_file = io.BytesIO()
-            file.save(in_memory_file)
+            file_obj.save(in_memory_file)
             nparr = np.fromstring(in_memory_file.getvalue(), dtype=np.uint8)
             img_mat = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            return process(img_mat, file.filename)
+            return process(img_mat, file_obj.filename)
 
     return '''
     <!doctype html>
@@ -63,7 +57,7 @@ def process_image():
 
 
 def process(img_mat, filename=None):
-    results, elapsed_seconds = yolo.detect_from_cvmat(img_mat)
+    results, elapsed_seconds = yolo_obj.detect_from_cvmat(img_mat)
 
     if filename:
         response = {'filename': filename,
@@ -82,5 +76,5 @@ def allowed_file(filename):
 
 
 if __name__ == '__main__':
-    yolo = YOLO_TF()
+    yolo_obj = YOLO_TF()
     app.run(host='0.0.0.0')

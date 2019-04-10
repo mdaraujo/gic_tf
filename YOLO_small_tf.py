@@ -1,9 +1,9 @@
-import numpy as np
-import cv2
-import tensorflow as tf
-import time
 import sys
 import os
+import time
+import cv2
+import numpy as np
+import tensorflow as tf
 
 
 # python2 YOLO_small_tf.py -fromfile client/images/person1.jpg -disp_console 1
@@ -170,23 +170,23 @@ class YOLO_TF:
         inputs[0] = (img_resized_np/255.0)*2.0-1.0
         in_dict = {self.x: inputs}
         net_output = self.sess.run(self.fc_32, feed_dict=in_dict)
-        self.result = self.interpret_output(net_output[0])
-        self.show_results(img, self.result)
+        raw_results = self.interpret_output(net_output[0])
+        self.show_results(img, raw_results)
         elapsed_time = time.time() - s
         if self.disp_console:
             print 'Elapsed time : ' + str(elapsed_time) + ' secs' + '\n'
 
-        results = []
-        for i in range(len(self.result)):
-            x = int(self.result[i][1])
-            y = int(self.result[i][2])
-            w = int(self.result[i][3])
-            h = int(self.result[i][4])
-            results.append({'class': self.result[i][0],
-                            '[x,y,w,h]:': '[{},{},{},{}]'.format(x, y, w, h),
-                            'confidence': float(self.result[i][5])})
+        results_obj = []
+        for i in range(len(raw_results)):
+            x = int(raw_results[i][1])
+            y = int(raw_results[i][2])
+            w = int(raw_results[i][3])
+            h = int(raw_results[i][4])
+            results_obj.append({'class': raw_results[i][0],
+                                '[x,y,w,h]': [x, y, w, h],
+                                'confidence': float(raw_results[i][5])})
 
-        return results, elapsed_time
+        return results_obj, elapsed_time
 
     def detect_from_file(self, filename):
         if self.disp_console:
@@ -194,22 +194,6 @@ class YOLO_TF:
         img = cv2.imread(filename)
         # img = misc.imread(filename)
         return self.detect_from_cvmat(img)
-
-    def detect_from_crop_sample(self):
-        self.w_img = 640
-        self.h_img = 420
-        f = np.array(open('person_crop.txt', 'r').readlines(), dtype='float32')
-        inputs = np.zeros((1, 448, 448, 3), dtype='float32')
-        for c in range(3):
-            for y in range(448):
-                for x in range(448):
-                    inputs[0, y, x, c] = f[c*448*448+y*448+x]
-
-        in_dict = {self.x: inputs}
-        net_output = self.sess.run(self.fc_32, feed_dict=in_dict)
-        self.boxes, self.probs = self.interpret_output(net_output[0])
-        img = cv2.imread('person.jpg')
-        self.show_results(self.boxes, img)
 
     def interpret_output(self, output):
         probs = np.zeros((7, 7, 2, 20))
