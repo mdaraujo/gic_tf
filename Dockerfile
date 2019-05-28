@@ -28,7 +28,7 @@ RUN ${PIP} install ${TF_PACKAGE}${TF_PACKAGE_VERSION:+==${TF_PACKAGE_VERSION}}
 # OpenCV
 RUN apt-get install build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev -y
 
-RUN ${PIP} install numpy opencv-python flask jsonpickle
+RUN ${PIP} install numpy opencv-python flask jsonpickle uwsgi
 
 RUN apt-get install wget -y
 
@@ -37,9 +37,10 @@ RUN mkdir -p /opt/weights
 
 RUN wget https://raw.githubusercontent.com/mdaraujo/gic_tf/master/YOLO_small_tf.py -O /opt/YOLO_small_tf.py
 RUN wget https://raw.githubusercontent.com/mdaraujo/gic_tf/master/yolo_tf_service.py -O /opt/yolo_tf_service.py
+RUN wget https://raw.githubusercontent.com/mdaraujo/gic_tf/master/wsgi.ini -O /opt/wsgi.ini
 
 WORKDIR /opt
 
 EXPOSE 5000
 
-CMD ["/usr/bin/python", "/opt/yolo_tf_service.py"]
+CMD ["uwsgi", "--ini", "/opt/wsgi.ini"]

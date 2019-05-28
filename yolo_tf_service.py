@@ -8,6 +8,8 @@ from YOLO_small_tf import YOLO_TF
 
 # curl -X POST -F 'file=@client/images/person1.jpg' http://localhost:5000/process
 
+yolo_obj = YOLO_TF()
+
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 app = Flask(__name__)
@@ -76,5 +78,4 @@ def allowed_file(filename):
 
 
 if __name__ == '__main__':
-    yolo_obj = YOLO_TF()
-    app.run(host='0.0.0.0')
+    app.run()
