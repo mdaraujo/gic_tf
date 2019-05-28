@@ -1,13 +1,37 @@
 version: "3"
 services:
-  web:
+  lb1:
+    image: nginx
+    volumes:
+    - /mnt/cifs13/yolo_tf/nginx/:/etc/nginx/
+    ports:
+    - "7700:80"
+  #lb2:
+    #image: nginx
+    #volumes:
+    #- /mnt/cifs13/yolo_tf/nginx/:/etc/nginx/
+    #ports:
+    #- ":80"
+  service1:
     image: mdaraujo/gic_yolo_tf:latest
     deploy:
-      replicas: 10
+      replicas: 5
       restart_policy:
         condition: on-failure
     ports:
-      - "7700:5000"
+      - "7701:5000"
+    volumes:
+      - /mnt/cifs13/yolo_tf/weights:/opt/weights
+    networks:
+      - webnet #Load-Balancer
+  service2:
+    image: mdaraujo/gic_yolo_tf:latest
+    deploy:
+      replicas: 5
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "7702:5000"
     volumes:
       - /mnt/cifs13/yolo_tf/weights:/opt/weights
     networks:
