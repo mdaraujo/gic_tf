@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Event handler script for scaling up yolo tf services
+#
+#
+
+# What state is the service in?
+case "$1" in
+OK)
+	# The service just came back up, so don't do anything...
+	;;
+WARNING)
+	# We don't really care about warning states, since the service is probably still running...
+	;;
+UNKNOWN)
+	# We don't know what might be causing an unknown error, so don't do anything...
+	;;
+CRITICAL)
+	# The service appears to have a problem - we should scale up the service...
+	
+	echo -n "Scaling up the service ..."
+	ssh compute@192.168.215.21 'bash $HOME/scale-up.sh'
+	;;
+esac
+exit 0

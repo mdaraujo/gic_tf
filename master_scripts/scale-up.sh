@@ -1,4 +1,5 @@
-# min_instances_per_service=5
+#!/bin/bash
+
 max_instances_per_service=10
 
 curr_total_intances_1=$(sudo docker service ls | grep yolo_tf_service1 | awk {'print $4'} | cut -d "/" -f 2)
