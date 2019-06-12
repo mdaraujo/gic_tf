@@ -10,7 +10,7 @@ import numpy as np
 # python2 video_stream_client.py -i videos/Li165C-DN.mp4 -w 20 -q-size 150
 
 LOCAL_URL = 'http://localhost:5000/process'
-SERVER_URL = 'http://192.168.215.21:7700/process'
+SERVER_URL = 'http://172.100.101.1:7700/process'
 HEADERS = {'content-type': 'image/jpeg'}
 
 
@@ -35,7 +35,7 @@ def main():
                         help="Whether or not frames should be displayed. (1)")
     parser.add_argument("-u", "--url", dest="url", type=str, default="local",
                         help="Server URL to send frames to. If \"local\": localhost:5000/process; "
-                        "If \"server\": http://192.168.215.21:7700/process; Else use URL argument.")
+                        "If \"server\": http://172.100.101.1:7700/process; Else use URL argument.")
     parser.add_argument("-I", "--input-device", type=int, default=0,
                         help="Device number input. (0)")
     parser.add_argument("-i", "--input-video-file", type=str, default="",
