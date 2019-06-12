@@ -1,0 +1,11 @@
+###############################################
+#
+# Ansible NAGIOS CROSS-PLATFORM AGENT Install
+#
+###############################################
+- hosts: computes
+  remote_user: compute
+  become: yes
+  become_method: sudo
+  tasks:
+    - shell: sh /mnt/cifs13/yolo_tf/nagios/nagios_ncpa_install.sh

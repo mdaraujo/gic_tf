@@ -1,0 +1,18 @@
+#########################################################
+#
+# Ansible Yolo_TF Service Setup
+#
+#########################################################
+- hosts: computes
+  remote_user: compute
+  become: yes
+  become_method: sudo
+  tasks:
+    - shell: "docker node inspect self --format {{ '{{' }}.Status.Addr{{ '}}' }}"
+      register: swarm_manager
+    - set_fact: swarm_manager_host="{{ swarm_manager.stdout }}"
+    - debug: var=swarm_manager_host
+
+- hosts: "{{ swarm_manager_host }}"
+  tasks:
+  - shell: "/bin/bash /mnt/cifs13/yolo_tf/start_service.sh 192.168.215.21"

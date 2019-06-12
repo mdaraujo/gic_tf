@@ -1,0 +1,11 @@
+#################################
+#
+# Ansible Yolo_TF Service Setup
+#
+#################################
+- hosts: computes
+  remote_user: compute
+  become: yes
+  become_method: sudo
+  tasks:
+    - shell: "docker rm $(docker ps -a --filter status=exited | grep yolo_tf | awk {'print $1'})"
