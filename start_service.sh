@@ -16,6 +16,8 @@ upstream_conf_path="$nginx_working_dir/upstream.conf"
 ssh compute@$swarm_master_ip "echo '' > /mnt/cifs13/yolo_tf/nginx/upstream.conf"
 ssh compute@$swarm_master_ip "wget -O /home/compute/scale-up.sh https://raw.githubusercontent.com/mdaraujo/gic_tf/master/master_scripts/scale-up.sh"
 ssh compute@$swarm_master_ip "wget -O /home/compute/scale-down.sh https://raw.githubusercontent.com/mdaraujo/gic_tf/master/master_scripts/scale-down.sh"
+ssh compute@$swarm_master_ip "wget -O /home/compute/scale-down-deamon.py https://raw.githubusercontent.com/mdaraujo/gic_tf/master/master_scripts/scale-down-deamon.py"
+ssh compute@$swarm_master_ip "python /home/compute/scale-down-deamon.py &"
 
 ssh compute@$swarm_master_ip "wget -O \"$nginx_working_dir/nginx.conf\" https://raw.githubusercontent.com/mdaraujo/gic_tf/master/nginx/nginx.conf"
 ssh compute@$swarm_master_ip "wget -O \"$nginx_working_dir/uwsgi_params\" https://raw.githubusercontent.com/mdaraujo/gic_tf/master/nginx/uwsgi_params"
