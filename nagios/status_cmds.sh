@@ -20,4 +20,4 @@ scp root@192.168.215.196:/usr/local/nagios/etc/contacts.cfg /home/miguel/Documen
 
 
 ## Copy scale up event handler to nagios
-scp yolo_tf_event_scale_up.sh root@192.168.215.196:/usr/local/nagios/libexec
+scp yolo_tf_event_scale_up root@192.168.215.196:/usr/local/nagios/libexec
